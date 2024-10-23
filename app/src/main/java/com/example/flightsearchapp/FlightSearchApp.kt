@@ -1,32 +1,55 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.flightsearchapp
 
-import androidx.compose.foundation.layout.padding
+import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.example.flightsearchapp.ui.homescreen.HomeScreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.flightsearchapp.ui.navigation.FlightSearchNavHost
 
 @Composable
-fun FlightSearchApp() {
-    Scaffold(topBar = { FlightSearchTopAppBar() }) { innerPadding ->
-        HomeScreen(modifier = Modifier.padding(innerPadding))
-    }
+fun FlightSearchApp(navController: NavHostController = rememberNavController()) {
+    FlightSearchNavHost(navController)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FlightSearchTopAppBar(modifier: Modifier = Modifier) {
-    TopAppBar(
-        title = { stringResource(R.string.app_name) },
+fun FlightSearchTopAppBar(
+    @StringRes title: Int,
+    canNavigateBack: Boolean,
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    navigateUp: () -> Unit = {},
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(stringResource(title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color(0xFF1565C0),
             titleContentColor = Color.White
         ),
-        modifier = modifier
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button)
+                    )
+                }
+            }
+        }
     )
 }

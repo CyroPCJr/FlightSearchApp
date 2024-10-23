@@ -4,9 +4,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface AirportRepository {
 
-    suspend fun getAllAirports(): Flow<List<Airport>>
+    fun getAllAirports(): Flow<List<Airport>>
 
-    suspend fun getAirportsName(name: String): Flow<Airport>
+    fun getAirportsByIata(iata: String): Flow<List<Airport>>
 
-    suspend fun getAirportsIata(iata: String): Flow<Airport>
+    fun getAirportsStreamById(id: Int): Flow<List<Airport>>
+
+    fun getAirportById(id: Int): Flow<Airport?>
 }
