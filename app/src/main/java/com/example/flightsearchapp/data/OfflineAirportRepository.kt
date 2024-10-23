@@ -4,11 +4,13 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineAirportRepository(private val airportDao: AirportDao) : AirportRepository {
 
-    override suspend fun getAllAirports(): Flow<List<Airport>> = airportDao.getAllAirports()
+    override fun getAllAirports(): Flow<List<Airport>> = airportDao.getAllAirports()
 
-    override suspend fun getAirportsName(name: String): Flow<Airport> =
-        airportDao.getAirportsName(name)
+    override fun getAirportsByIata(iata: String): Flow<List<Airport>> =
+        airportDao.getAirportsByIata(iata)
 
-    override suspend fun getAirportsIata(iata: String): Flow<Airport> =
-        airportDao.getAirportsIata(iata)
+    override fun getAirportsStreamById(id: Int): Flow<List<Airport>> =
+        airportDao.getAirportsStreamById(id)
+
+    override fun getAirportById(id: Int): Flow<Airport?> = airportDao.getAirportById(id)
 }
