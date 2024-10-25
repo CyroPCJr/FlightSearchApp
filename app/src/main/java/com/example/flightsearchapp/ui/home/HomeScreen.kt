@@ -21,7 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,13 +28,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearchapp.FlightSearchTopAppBar
 import com.example.flightsearchapp.R
 import com.example.flightsearchapp.data.Airport
+import com.example.flightsearchapp.data.Favorite
 import com.example.flightsearchapp.ui.AppViewModelProvider
+import com.example.flightsearchapp.ui.components.FlightDestinationDetails
 import com.example.flightsearchapp.ui.components.FlightSearchDisplay
 import com.example.flightsearchapp.ui.navigation.NavigationDestination
 import com.example.flightsearchapp.ui.theme.FlightSearchAppTheme
@@ -81,14 +84,13 @@ private fun HomeBody(
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp),
 ) {
-    val homeUiState by viewModel.homeUiState.collectAsState()
+    var searchText by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
-        var searchText by remember { mutableStateOf("") }
 
         OutlinedTextField(
             value = searchText,
@@ -111,22 +113,76 @@ private fun HomeBody(
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
-        FlightList(homeUiState.airport, navigateToSelectFlight)
+        FlightList(
+            viewModel.uiState.airport,
+            viewModel,
+            navigateToSelectFlight,
+        )
     }
 }
 
 @Composable
 private fun FlightList(
     airportList: List<Airport>,
+    viewModel: HomeScreenViewModel,
     navigateToSelectFlight: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(airportList, key = { item -> item.id }) { airport ->
-            FlightSearchDisplay(airport, navigateToSelectFlight)
+    if (viewModel.uiState.searchText.isNotEmpty()) {
+        LazyColumn(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(airportList, key = { item -> item.id }) { airport ->
+                FlightSearchDisplay(airport, navigateToSelectFlight)
+            }
+        }
+    } else {
+        viewModel.loadFavoriteList()
+
+        LazyColumn(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                Text(
+                    text =
+                    if (viewModel.favoriteUiState.airportsFavorite.isNotEmpty())
+                        stringResource(R.string.subtitle_favorite_routes)
+                    else {
+                        ""
+                    },
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    //modifier = Modifier.padding(contentPaddingValues)
+                )
+            }
+
+            items(
+                viewModel.favoriteUiState.airportsFavorite,
+                key = { item -> item.id }) { airportFlights ->
+                val airportFrom = Airport(
+                    id = 0,
+                    iata = airportFlights.departureIata,
+                    name = airportFlights.departureName,
+                    passengers = 0
+                )
+                val airportTo = Airport(
+                    id = 0,
+                    iata = airportFlights.destinationIata,
+                    name = airportFlights.destinationName,
+                    passengers = 0
+                )
+                FlightDestinationDetails(airportFrom, airportTo, onSaveFavorite = {
+                    viewModel.removeFavoriteList(
+                        Favorite(
+                            airportFlights.id,
+                            departureCode = airportFlights.departureIata,
+                            destinationCode = airportFlights.destinationIata
+                        )
+                    )
+                })
+            }
         }
     }
 }

@@ -4,11 +4,18 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.flightsearchapp.model.FavoriteFlights
 
-@Database(entities = [Airport::class, Favorite::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Airport::class, Favorite::class],
+    views = [FavoriteFlights::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class FlightSearchDatabase : RoomDatabase() {
 
     abstract fun airportDao(): AirportDao
+    abstract fun favoriteDao(): FavoriteDao
 
     companion object {
         @Volatile

@@ -12,13 +12,17 @@ import com.example.flightsearchapp.ui.home.HomeScreenViewModel
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            HomeScreenViewModel(flightSearchApplication().container.airportRepository)
+            HomeScreenViewModel(
+                flightSearchApplication().container.airportRepository,
+                flightSearchApplication().container.favoriteRepository
+            )
         }
 
         initializer {
             FlightDestinationViewModel(
                 this.createSavedStateHandle(),
-                flightSearchApplication().container.airportRepository
+                flightSearchApplication().container.airportRepository,
+                flightSearchApplication().container.favoriteRepository
             )
         }
     }

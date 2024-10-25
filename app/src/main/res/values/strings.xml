@@ -9,8 +9,8 @@
     <string name="flight_detail_arrive">ARRIVE</string>
     <string name="flight_detail_departure">DEPARTURE</string>
 
-    <string name="subtitle_favorite_routes">Flights from %s</string>
-    <string name="subtitle_flight_from">Favorite routes</string>
+    <string name="subtitle_flight_from">Flights from %s</string>
+    <string name="subtitle_favorite_routes">Favorite routes</string>
 
     <string name="flight_destination_screen">Flight Destination</string>
 
