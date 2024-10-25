@@ -21,7 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +35,7 @@ import com.example.flightsearchapp.FlightSearchTopAppBar
 import com.example.flightsearchapp.R
 import com.example.flightsearchapp.data.Airport
 import com.example.flightsearchapp.ui.AppViewModelProvider
+import com.example.flightsearchapp.ui.components.FlightDestinationDetails
 import com.example.flightsearchapp.ui.components.FlightSearchDisplay
 import com.example.flightsearchapp.ui.navigation.NavigationDestination
 import com.example.flightsearchapp.ui.theme.FlightSearchAppTheme
@@ -81,14 +81,13 @@ private fun HomeBody(
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp),
 ) {
-    val homeUiState by viewModel.homeUiState.collectAsState()
+    var searchText by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
-        var searchText by remember { mutableStateOf("") }
 
         OutlinedTextField(
             value = searchText,
@@ -111,22 +110,50 @@ private fun HomeBody(
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
-        FlightList(homeUiState.airport, navigateToSelectFlight)
+        FlightList(viewModel.uiState.airport, viewModel, navigateToSelectFlight)
     }
 }
 
 @Composable
 private fun FlightList(
     airportList: List<Airport>,
+    viewModel: HomeScreenViewModel,
     navigateToSelectFlight: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(airportList, key = { item -> item.id }) { airport ->
-            FlightSearchDisplay(airport, navigateToSelectFlight)
+    if (airportList.isNotEmpty()) {
+        LazyColumn(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(airportList, key = { item -> item.id }) { airport ->
+                FlightSearchDisplay(airport, navigateToSelectFlight)
+            }
+        }
+    } else {
+        viewModel.loadFavoriteList()
+
+        LazyColumn(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                viewModel.favoriteUiState.airportsFavorite,
+                key = { item -> item.id }) { airportflights ->
+                val airportFrom = Airport(
+                    id = 0,
+                    iata = airportflights.departureIata,
+                    name = airportflights.departureName,
+                    passengers = 0
+                )
+                val airportTo = Airport(
+                    id = 0,
+                    iata = airportflights.destinationIata,
+                    name = airportflights.destinationName,
+                    passengers = 0
+                )
+                FlightDestinationDetails(airportFrom, airportTo, onSaveFavorite = { })
+            }
         }
     }
 }

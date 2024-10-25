@@ -2,44 +2,30 @@
 
 package com.example.flightsearchapp.ui.destination
 
-import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearchapp.FlightSearchTopAppBar
 import com.example.flightsearchapp.R
 import com.example.flightsearchapp.data.Airport
 import com.example.flightsearchapp.ui.AppViewModelProvider
-import com.example.flightsearchapp.ui.components.FlightSearchDisplay
+import com.example.flightsearchapp.ui.components.FlightDestinationDetails
 import com.example.flightsearchapp.ui.navigation.NavigationDestination
 import com.example.flightsearchapp.ui.theme.FlightSearchAppTheme
+import kotlinx.coroutines.launch
 
 object FlightDestinationRoute : NavigationDestination {
     override val route: String = "flightDestination"
@@ -65,7 +51,7 @@ fun FlightListDestination(
         )
     })
     { innerPadding ->
-
+        val coroutineScope = rememberCoroutineScope()
         LazyColumn {
             item {
                 Text(
@@ -79,75 +65,21 @@ fun FlightListDestination(
                 )
             }
 
-            items(airportList, key = { airport -> airport.id }) {
+            items(airportList, key = { airport -> airport.id }) { it ->
                 FlightDestinationDetails(
                     airportFrom = airport!!,
                     airportTo = it,
-                    onSaveFavorite = { },
+                    onSaveFavorite = {
+                        coroutineScope.launch {
+                            flightDestinationViewModel.saveFavoriteRoute(it.iata)
+                        }
+                    },
                     modifier
                 )
             }
 
         }
     }
-}
-
-@Composable
-private fun FlightDestinationDetails(
-    airportFrom: Airport,
-    airportTo: Airport,
-    onSaveFavorite: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF1F5)),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    FlightDetailSubTitle(R.string.flight_detail_departure)
-                    FlightSearchDisplay(airportFrom)
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    FlightDetailSubTitle(R.string.flight_detail_arrive)
-                    FlightSearchDisplay(airportTo)
-                }
-
-                IconButton(onClick = onSaveFavorite) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(R.string.icon_save_favorite),
-                        tint = Color.Black
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun FlightDetailSubTitle(@StringRes text: Int) {
-    Text(
-        text = stringResource(text),
-        fontWeight = FontWeight.Bold,
-        color = Color.Gray,
-        fontSize = 12.sp
-    )
 }
 
 @Preview(showBackground = true)
