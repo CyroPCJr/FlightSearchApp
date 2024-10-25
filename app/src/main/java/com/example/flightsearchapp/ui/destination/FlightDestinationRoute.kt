@@ -56,7 +56,7 @@ fun FlightListDestination(
             item {
                 Text(
                     text = stringResource(
-                        R.string.subtitle_favorite_routes,
+                        R.string.subtitle_flight_from,
                         airport!!.iata
                     ),
                     fontWeight = FontWeight.Bold,

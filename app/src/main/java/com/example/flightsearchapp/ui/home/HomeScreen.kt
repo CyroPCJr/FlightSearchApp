@@ -28,12 +28,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearchapp.FlightSearchTopAppBar
 import com.example.flightsearchapp.R
 import com.example.flightsearchapp.data.Airport
+import com.example.flightsearchapp.data.Favorite
 import com.example.flightsearchapp.ui.AppViewModelProvider
 import com.example.flightsearchapp.ui.components.FlightDestinationDetails
 import com.example.flightsearchapp.ui.components.FlightSearchDisplay
@@ -110,7 +113,11 @@ private fun HomeBody(
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
-        FlightList(viewModel.uiState.airport, viewModel, navigateToSelectFlight)
+        FlightList(
+            viewModel.uiState.airport,
+            viewModel,
+            navigateToSelectFlight,
+        )
     }
 }
 
@@ -121,7 +128,7 @@ private fun FlightList(
     navigateToSelectFlight: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (airportList.isNotEmpty()) {
+    if (viewModel.uiState.searchText.isNotEmpty()) {
         LazyColumn(
             modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -137,22 +144,44 @@ private fun FlightList(
             modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            item {
+                Text(
+                    text =
+                    if (viewModel.favoriteUiState.airportsFavorite.isNotEmpty())
+                        stringResource(R.string.subtitle_favorite_routes)
+                    else {
+                        ""
+                    },
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    //modifier = Modifier.padding(contentPaddingValues)
+                )
+            }
+
             items(
                 viewModel.favoriteUiState.airportsFavorite,
-                key = { item -> item.id }) { airportflights ->
+                key = { item -> item.id }) { airportFlights ->
                 val airportFrom = Airport(
                     id = 0,
-                    iata = airportflights.departureIata,
-                    name = airportflights.departureName,
+                    iata = airportFlights.departureIata,
+                    name = airportFlights.departureName,
                     passengers = 0
                 )
                 val airportTo = Airport(
                     id = 0,
-                    iata = airportflights.destinationIata,
-                    name = airportflights.destinationName,
+                    iata = airportFlights.destinationIata,
+                    name = airportFlights.destinationName,
                     passengers = 0
                 )
-                FlightDestinationDetails(airportFrom, airportTo, onSaveFavorite = { })
+                FlightDestinationDetails(airportFrom, airportTo, onSaveFavorite = {
+                    viewModel.removeFavoriteList(
+                        Favorite(
+                            airportFlights.id,
+                            departureCode = airportFlights.departureIata,
+                            destinationCode = airportFlights.destinationIata
+                        )
+                    )
+                })
             }
         }
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flightsearchapp.data.Airport
 import com.example.flightsearchapp.data.AirportRepository
+import com.example.flightsearchapp.data.Favorite
 import com.example.flightsearchapp.data.FavoriteRepository
 import com.example.flightsearchapp.model.FavoriteFlights
 import com.example.flightsearchapp.ui.theme.CustomKorma
@@ -73,6 +74,12 @@ class HomeScreenViewModel(
             }.collect { newState ->
                 favoriteUiState = newState
             }
+        }
+    }
+
+    fun removeFavoriteList(favorite: Favorite) {
+        viewModelScope.launch {
+            favoriteRepository.delete(favorite)
         }
     }
 
