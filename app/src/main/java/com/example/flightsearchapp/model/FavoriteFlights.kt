@@ -2,6 +2,8 @@ package com.example.flightsearchapp.model
 
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
+import com.example.flightsearchapp.data.Airport
+import com.example.flightsearchapp.data.Favorite
 
 @DatabaseView(
     """SELECT  f.id AS favorite_id,
@@ -21,4 +23,22 @@ data class FavoriteFlights(
     @ColumnInfo(name = "departure_name") val departureName: String,
     @ColumnInfo(name = "destination_iata") val destinationIata: String,
     @ColumnInfo(name = "destination_name") val destinationName: String,
+)
+
+enum class FlightType {
+    Departure, Destination
+}
+
+
+fun FavoriteFlights.toFavorite(): Favorite = Favorite(
+    id = id,
+    departureCode = departureIata,
+    destinationCode = destinationIata
+)
+
+fun FavoriteFlights.toAirportType(type: FlightType): Airport = Airport(
+    id = id,
+    name = if (type == FlightType.Departure) departureName else destinationName,
+    iata = if (type == FlightType.Departure) departureIata else destinationIata,
+    passengers = 0
 )
