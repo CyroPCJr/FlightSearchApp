@@ -1,6 +1,6 @@
 # Flight Search App
 
-This project aims to put into practice the knowledge acquired during unit 6 google basic Android , with a focus on relational databases, SQL, Room, and Preferences DataStore. The flight search app will allow users to consult destinations from specific airports, managing their favorite routes and saving the search status. 
+This project aims to put into practice the knowledge acquired during [unit 6 google basic Android](https://developer.android.com/codelabs/basic-android-kotlin-compose-flight-search#0) , with a focus on relational databases, SQL, Room, and Preferences DataStore. The flight search app will allow users to consult destinations from specific airports, managing their favorite routes and saving the search status. 
 
 ## 📱 Features: 
 - **Airport search field:** Allows the user to enter the name of an airport or use the International Air Transport Association (IATA) identifier. 
