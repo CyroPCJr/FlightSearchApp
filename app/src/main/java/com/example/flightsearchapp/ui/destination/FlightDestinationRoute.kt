@@ -65,7 +65,7 @@ fun FlightListDestination(
                 )
             }
 
-            items(airportList, key = { airport -> airport.id }) { it ->
+            items(airportList, key = { airport -> airport.id }) {
                 FlightDestinationDetails(
                     airportFrom = airport!!,
                     airportTo = it,

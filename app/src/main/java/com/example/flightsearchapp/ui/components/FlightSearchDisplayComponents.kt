@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flightsearchapp.R
 import com.example.flightsearchapp.data.Airport
+import com.example.flightsearchapp.ui.theme.CustomLightGray
 
 @Composable
 fun FlightSearchDisplay(
@@ -59,7 +60,7 @@ fun FlightDestinationDetails(
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF1F5)),
+        colors = CardDefaults.cardColors(containerColor = CustomLightGray),
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),

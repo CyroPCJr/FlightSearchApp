@@ -10,6 +10,7 @@ import com.example.flightsearchapp.data.Airport
 import com.example.flightsearchapp.data.AirportRepository
 import com.example.flightsearchapp.data.Favorite
 import com.example.flightsearchapp.data.FavoriteRepository
+import com.example.flightsearchapp.data.local.UserPreferencesRepository
 import com.example.flightsearchapp.model.FavoriteFlights
 import com.example.flightsearchapp.ui.theme.CustomKorma
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 class HomeScreenViewModel(
     private val airportRepository: AirportRepository,
     private val favoriteRepository: FavoriteRepository,
+    private val userPreference: UserPreferencesRepository,
 ) : ViewModel() {
 
     companion object {
@@ -32,27 +34,9 @@ class HomeScreenViewModel(
     var favoriteUiState by mutableStateOf(FavoriteListUiState())
         private set
 
-//    var homeUiState: StateFlow<HomeUiState> = airportRepository.getAllAirports()
-//        .map { HomeUiState(airport = it) }
-//        .stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-//            initialValue = HomeUiState()
-//        )
-//
-//    fun onAirportValueChange(search: String) {
-//        homeUiState =
-//            airportRepository.getAirportsByIata(search).map {
-//                HomeUiState(it,search)
-//            }.stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-//                initialValue = HomeUiState()
-//            )
-//    }
-
     fun onAirportValueChange(search: String) {
         viewModelScope.launch {
+            userPreference.saveSearchText(search)
             airportRepository.getAirportsByIata(search)
                 .map { airports ->
                     HomeUiState(airport = airports, searchText = search)
@@ -65,6 +49,10 @@ class HomeScreenViewModel(
                     uiState = newState
                 }
         }
+    }
+
+    fun updateSearchText(search: String) {
+        uiState.searchText = search
     }
 
     fun loadFavoriteList() {
@@ -83,12 +71,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun loadPreferenceSearchText() = userPreference.searchTextFlow
 
+
+    fun displayItemTitleList(title: String): String {
+        return if (favoriteUiState.airportsFavorite.isNotEmpty()) {
+            title
+        } else {
+            ""
+        }
+    }
 }
 
 data class HomeUiState(
     var airport: List<Airport> = listOf(),
-    val searchText: String = "",
+    var searchText: String = "",
 )
 
 data class FavoriteListUiState(
