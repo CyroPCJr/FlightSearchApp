@@ -26,7 +26,6 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearchapp.FlightSearchTopAppBar
 import com.example.flightsearchapp.R
@@ -63,8 +63,8 @@ object HomeScreenDestination : NavigationDestination {
 
 @Composable
 fun HomeScreen(
-    navigateToSelectFlight: (Int) -> Unit,
     viewModel: HomeScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navigateToSelectFlight: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -99,7 +99,7 @@ private fun HomeBody(
     var searchText by remember { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    val searchPreferences by viewModel.loadPreferenceSearchText().collectAsState("")
+    val searchPreferences by viewModel.loadPreferenceSearchText().collectAsStateWithLifecycle("")
 
     Column(
         modifier = modifier
