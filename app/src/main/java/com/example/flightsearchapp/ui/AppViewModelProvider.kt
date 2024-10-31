@@ -15,7 +15,7 @@ object AppViewModelProvider {
             HomeScreenViewModel(
                 flightSearchApplication().container.airportRepository,
                 flightSearchApplication().container.favoriteRepository,
-                flightSearchApplication().userPreferencesRepository
+                flightSearchApplication().userPreferencesRepository,
             )
         }
 
